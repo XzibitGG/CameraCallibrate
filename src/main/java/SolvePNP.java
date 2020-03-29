@@ -43,7 +43,7 @@ public class SolvePNP {
         drawCorners(cornerPoints, frame);
 
         getPose(cornerPoints);
-        MatOfPoint2f imagePoints = projectPoints(frame, getCenter(contours.get(0)));
+       projectPoints(frame, getCenter(contours.get(0)));
 
         HighGui.imshow("Frame", frame);
         HighGui.waitKey();
@@ -127,18 +127,12 @@ public class SolvePNP {
         //System.out.println(rvect.dump() + " " + tvect.dump());
     }
 
-    public static MatOfPoint2f projectPoints(Mat frame, Point center){
+    public static void projectPoints(Mat frame, Point center){
         MatOfPoint2f bottomImagePoints = new MatOfPoint2f();
         MatOfPoint2f topImagePoints = new MatOfPoint2f();
         Calib3d.projectPoints(bottomObjPointsMat, rvect, tvect, cameraMatrix, distCoeffs, bottomImagePoints);
         Calib3d.projectPoints(topObjPointsMat, rvect, tvect, cameraMatrix, distCoeffs, topImagePoints);
 
-        Point x = new Point(center.x + 40, center.y);
-        Point y = new Point(center.x, center.y - 40);
-        Point z = new Point(center.x - 20, center.y + 20);
-        Imgproc.line(frame, center, x, new Scalar(0, 0, 255), 3);
-        Imgproc.line(frame, center, y, new Scalar(0, 255, 0), 3);
-        Imgproc.line(frame, center, z, new Scalar(255, 0, 0), 3);
 
         Imgproc.drawContours(frame, Collections.singletonList(new MatOfPoint(bottomImagePoints.toArray())), -1, new Scalar(0, 0, 255), 2);
 
@@ -148,7 +142,6 @@ public class SolvePNP {
 
         Imgproc.drawContours(frame, Collections.singletonList(new MatOfPoint(topImagePoints.toArray())), -1, new Scalar(255, 0, 255), 2);
 
-        return bottomImagePoints;
     }
 
 
