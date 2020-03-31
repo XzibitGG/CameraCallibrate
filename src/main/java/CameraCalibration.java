@@ -80,11 +80,37 @@ public class CameraCalibration {
         List<Mat> tvecs = new ArrayList<Mat>();
         Mat perViewError = new Mat();
         double error = Calib3d.calibrateCameraExtended(pObj, pImagePoints, pImageSize, cameraMatrix, distCoeffs, rvecs, tvecs, new Mat(), new Mat(), perViewError);
+        scaleCameraMatrix(640, 480, 1080, 720, cameraMatrix);
         return error;
     }
 
     public Mat getCameraMatrix() {
         return cameraMatrix;
+    }
+
+    /*Since changing the resolution of the camera does not affect the distortion coefficients, but only affects the camera matrix. That being said, when the resolution is changed,
+    *all values in the camera matrix are scaled proportionally to the change in resolution, hence, we can auto scale the camera matrix so you don't have to recalibrate.
+    *@param  oldDimX   this is the old resolution along the x axis
+    *@param  oldDimY   this is the old resolution along the y axis
+    *@param  newDimX   this is the new resolution along the x axis
+    *@param  newDimY   this is the new resolution along the y axis
+    */
+    public void scaleCameraMatrix(double oldDimX, double oldDimY, double newDimX, double newDimY, Mat cameraMatrix){
+        //The focal length and center of image along the x axis
+        double fx =  cameraMatrix.get(0, 0)[0];
+        double cx = cameraMatrix.get(0, 2)[0];
+
+        //The focal length and center of image along the y axis
+        double fy =  cameraMatrix.get(1, 1)[0];
+        double cy = cameraMatrix.get(1, 2)[0];
+
+        //Replace fx, fy, cx,, and cy in the Mat with the new scaled ones
+        cameraMatrix.put(0, 0, fx * (newDimX / oldDimX));
+        cameraMatrix.put(1, 1, fy * (newDimY / oldDimY));
+
+        cameraMatrix.put(0, 2, cx * (newDimX / oldDimX));
+        cameraMatrix.put(1, 2, cy * (newDimY / oldDimY));
+
     }
 
     public MatOfDouble getDistCoeffs() {

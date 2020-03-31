@@ -15,6 +15,7 @@ public class SolvePNP {
     static Mat frame;
     static MatOfPoint3f bottomObjPointsMat;
     static MatOfPoint3f topObjPointsMat;
+    static MatOfPoint3f axisMat;
     static Mat rvect;
     static Mat tvect;
 
@@ -22,6 +23,7 @@ public class SolvePNP {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         bottomObjPointsMat = new MatOfPoint3f();
         topObjPointsMat = new MatOfPoint3f();
+        axisMat = new MatOfPoint3f();
         CameraCalibration calibration = new CameraCalibration();
 
         cameraMatrix = calibration.getCameraMatrix();
@@ -65,7 +67,7 @@ public class SolvePNP {
     public static List<MatOfPoint> findContours(Mat frame){
         hsvThreshold(frame, new double[]{0, 255},
                 new double[]{0, 255},
-                new double[]{100, 255},
+                new double[]{155, 255},
                 frame
         );
         List<MatOfPoint> points = new ArrayList<>();
@@ -117,6 +119,14 @@ public class SolvePNP {
                 new Point3(7 / 2.0, 11 / 2.0, -3.0)
         );
         topObjPointsMat.fromList(topCorners);
+
+        List<Point3> axis = List.of(
+                new Point3(0, 0, 0),
+                new Point3(1, 0, 0),
+                new Point3(0, 1, 0),
+                new Point3(0, 0, 0)
+        );
+        axisMat.fromList(axis);
     }
 
     public static  void getPose(Point[] imgCorners){
@@ -130,8 +140,10 @@ public class SolvePNP {
     public static void projectPoints(Mat frame, Point center){
         MatOfPoint2f bottomImagePoints = new MatOfPoint2f();
         MatOfPoint2f topImagePoints = new MatOfPoint2f();
+        MatOfPoint2f axisPoints = new MatOfPoint2f();
         Calib3d.projectPoints(bottomObjPointsMat, rvect, tvect, cameraMatrix, distCoeffs, bottomImagePoints);
         Calib3d.projectPoints(topObjPointsMat, rvect, tvect, cameraMatrix, distCoeffs, topImagePoints);
+        Calib3d.projectPoints(axisMat, rvect, tvect, cameraMatrix, distCoeffs, axisPoints);
 
 
         Imgproc.drawContours(frame, Collections.singletonList(new MatOfPoint(bottomImagePoints.toArray())), -1, new Scalar(0, 0, 255), 2);
