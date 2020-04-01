@@ -67,7 +67,7 @@ public class SolvePNP {
     public static List<MatOfPoint> findContours(Mat frame){
         hsvThreshold(frame, new double[]{0, 255},
                 new double[]{0, 255},
-                new double[]{155, 255},
+                new double[]{180, 255},
                 frame
         );
         List<MatOfPoint> points = new ArrayList<>();
@@ -132,7 +132,17 @@ public class SolvePNP {
     public static  void getPose(Point[] imgCorners){
         MatOfPoint2f corners = new MatOfPoint2f();
         corners.fromArray(imgCorners);
-        Calib3d.solvePnP(bottomObjPointsMat, corners, cameraMatrix, distCoeffs, rvect, tvect);
+        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY);
+        TermCriteria aCriteria = new TermCriteria(TermCriteria.EPS |
+                TermCriteria.MAX_ITER, 30,0.1);
+        Imgproc.cornerSubPix(frame, corners, new Size(11,11), new Size(-1,-1), aCriteria);
+        Mat _inliers = new Mat();
+        Calib3d.solvePnPRansac(bottomObjPointsMat, corners, cameraMatrix, distCoeffs, rvect, tvect, true, 10, 0, 0.0,_inliers, Calib3d.SOLVEPNP_ITERATIVE);
+        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_GRAY2BGR);
+        Mat undistortedFrame = new Mat();
+        Imgproc.undistort(frame, undistortedFrame, cameraMatrix, distCoeffs);
+        undistortedFrame.copyTo(frame);
+        System.out.println(_inliers.dump());
 
         //System.out.println(rvect.dump() + " " + tvect.dump());
     }
