@@ -18,6 +18,8 @@ public class SolvePNP {
     static MatOfPoint3f axisMat;
     static Mat rvect;
     static Mat tvect;
+    static List<MatOfPoint> contours;
+    static Point[] cornerPoints;
 
     public static void load(){
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -32,7 +34,8 @@ public class SolvePNP {
         rvect = new Mat();
         tvect = new Mat();
 
-        frame = Imgcodecs.imread("LoadingBay.jpg");
+        frame = Imgcodecs.imread("RedLoading-048in-Down.jpg");
+        Imgproc.resize(frame, frame, new Size(1080, 720));
     }
 
 
@@ -40,15 +43,12 @@ public class SolvePNP {
         load();
         setWorldCoordinates();
 
-        List<MatOfPoint> contours = findContours(frame);
-        Point[] cornerPoints = getPoints(contours.get(0), frame);
-        drawCorners(cornerPoints, frame);
-
+        contours = findContours(frame);
+        cornerPoints = getPoints(contours.get(0), frame);
         getPose(cornerPoints);
-       projectPoints(frame, getCenter(contours.get(0)));
+        projectPoints(frame, getCenter(contours.get(0)));
 
-        HighGui.imshow("Frame", frame);
-        HighGui.waitKey();
+
 
 
     }
@@ -58,21 +58,15 @@ public class SolvePNP {
         return new Point(rect.x+rect.width/(double)2,rect.y+rect.height/(double)2 );
     }
 
-    public static void drawCorners(Point[] corners, Mat frame){
-        for(Point point : corners){
-            Imgproc.circle(frame, point, 4,  new Scalar(0, 255, 0) );
-        }
-    }
-
     public static List<MatOfPoint> findContours(Mat frame){
         hsvThreshold(frame, new double[]{0, 255},
                 new double[]{0, 255},
-                new double[]{180, 255},
+                new double[]{100, 255},
                 frame
         );
         List<MatOfPoint> points = new ArrayList<>();
         Mat hierarchy = new Mat();
-        Imgproc.findContours(frame, points, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(frame, points, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
         //Sort by largest
         points.sort((o1, o2) -> {
             double area1 = Imgproc.contourArea(o1);
@@ -87,13 +81,11 @@ public class SolvePNP {
     public static Point[] getPoints(MatOfPoint contour, Mat frame){
         MatOfPoint2f contourMat = new MatOfPoint2f();
         contourMat.fromArray(contour.toArray());
+
         RotatedRect rect = Imgproc.minAreaRect(contourMat);
+
         Point[] cornersPoints = new Point[4];
         rect.points(cornersPoints);
-
-        for(int i=0; i<4; ++i){
-            Imgproc.line(frame, cornersPoints[i], cornersPoints[(i+1)%4], new Scalar(0,255,0));
-        }
         return cornersPoints;
     }
 
@@ -119,14 +111,6 @@ public class SolvePNP {
                 new Point3(7 / 2.0, 11 / 2.0, -3.0)
         );
         topObjPointsMat.fromList(topCorners);
-
-        List<Point3> axis = List.of(
-                new Point3(0, 0, 0),
-                new Point3(1, 0, 0),
-                new Point3(0, 1, 0),
-                new Point3(0, 0, 0)
-        );
-        axisMat.fromList(axis);
     }
 
     public static  void getPose(Point[] imgCorners){
@@ -134,37 +118,62 @@ public class SolvePNP {
         corners.fromArray(imgCorners);
         Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY);
         TermCriteria aCriteria = new TermCriteria(TermCriteria.EPS |
-                TermCriteria.MAX_ITER, 30,0.1);
+                TermCriteria.MAX_ITER, 30,0.01);
         Imgproc.cornerSubPix(frame, corners, new Size(11,11), new Size(-1,-1), aCriteria);
         Mat _inliers = new Mat();
-        Calib3d.solvePnPRansac(bottomObjPointsMat, corners, cameraMatrix, distCoeffs, rvect, tvect, true, 10, 0, 0.0,_inliers, Calib3d.SOLVEPNP_ITERATIVE);
+        Calib3d.solvePnPRansac(bottomObjPointsMat, corners, cameraMatrix, distCoeffs, rvect, tvect, true, 10, 0, 100.0,_inliers, Calib3d.SOLVEPNP_ITERATIVE);
         Imgproc.cvtColor(frame, frame, Imgproc.COLOR_GRAY2BGR);
-        Mat undistortedFrame = new Mat();
-        Imgproc.undistort(frame, undistortedFrame, cameraMatrix, distCoeffs);
-        undistortedFrame.copyTo(frame);
-        System.out.println(_inliers.dump());
 
-        //System.out.println(rvect.dump() + " " + tvect.dump());
     }
 
     public static void projectPoints(Mat frame, Point center){
         MatOfPoint2f bottomImagePoints = new MatOfPoint2f();
         MatOfPoint2f topImagePoints = new MatOfPoint2f();
-        MatOfPoint2f axisPoints = new MatOfPoint2f();
         Calib3d.projectPoints(bottomObjPointsMat, rvect, tvect, cameraMatrix, distCoeffs, bottomImagePoints);
         Calib3d.projectPoints(topObjPointsMat, rvect, tvect, cameraMatrix, distCoeffs, topImagePoints);
-        Calib3d.projectPoints(axisMat, rvect, tvect, cameraMatrix, distCoeffs, axisPoints);
 
+        double bottomPeri = Imgproc.arcLength(new MatOfPoint2f(bottomImagePoints.toArray()), true);
+        double topPeri = Imgproc.arcLength(new MatOfPoint2f(topImagePoints.toArray()), true);
 
-        Imgproc.drawContours(frame, Collections.singletonList(new MatOfPoint(bottomImagePoints.toArray())), -1, new Scalar(0, 0, 255), 2);
+        MatOfPoint2f bottomPolyOutput = new MatOfPoint2f();
+        MatOfPoint2f topPolyOutput = new MatOfPoint2f();
 
-        for (int i = 0; i < bottomImagePoints.rows(); i++) {
-            Imgproc.line(frame, new Point(bottomImagePoints.get(i, 0)), new Point(topImagePoints.get(i, 0)), new Scalar(0, 255, 0), 2);
+        Imgproc.approxPolyDP(new MatOfPoint2f(bottomImagePoints.toArray()),bottomPolyOutput, 0.01 * bottomPeri, true );
+        Imgproc.approxPolyDP(new MatOfPoint2f(topImagePoints.toArray()),topPolyOutput, 0.01 * topPeri, true );
+        MatOfInt bottomPoints = new MatOfInt();
+        Imgproc.convexHull(new MatOfPoint(bottomImagePoints.toArray()),bottomPoints );
+
+        Imgproc.drawContours(frame, Collections.singletonList(new MatOfPoint(hull2Points(bottomPoints, new MatOfPoint(bottomImagePoints.toArray())).toArray())), -1, new Scalar(0, 0, 255), 2);
+
+        for (int i = 0; i < bottomPolyOutput.rows(); i++) {
+            Imgproc.line(frame, new Point(bottomPolyOutput.get(i, 0)), new Point(topPolyOutput.get(i, 0)), new Scalar(0, 255, 0), 2);
         }
+        Mat frame2 = new Mat(frame.size(), frame.type());
+        Imgproc.drawContours(frame2, Collections.singletonList(new MatOfPoint(bottomPolyOutput.toArray())), -1, new Scalar(0, 0, 255), 2);
+        Imgproc.drawContours(frame2, List.of(contours.get(0)), -1, new Scalar(255, 0, 255), 2);
 
-        Imgproc.drawContours(frame, Collections.singletonList(new MatOfPoint(topImagePoints.toArray())), -1, new Scalar(255, 0, 255), 2);
+
+
+        MatOfInt hull = new MatOfInt();
+        Imgproc.convexHull(contours.get(0),hull );
+        Imgproc.drawContours(frame2, List.of(hull2Points(hull, contours.get(0))), 0, new Scalar(255, 0, 0), 1);
+
+
+        HighGui.namedWindow("Frame",  HighGui.WINDOW_NORMAL);
+        HighGui.imshow("Frame", frame);
+        HighGui.waitKey();
 
     }
 
+    public static MatOfPoint hull2Points(MatOfInt hull, MatOfPoint contour) {
+        List<Integer> indexes = hull.toList();
+        List<Point> points = new ArrayList<>();
+        MatOfPoint point= new MatOfPoint();
+        for(Integer index:indexes) {
+            points.add(contour.toList().get(index));
+        }
+        point.fromList(points);
+        return point;
+    }
 
 }

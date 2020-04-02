@@ -2,16 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4d2dd04c-f9b5-4cb9-89cc-91454c935e27" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/SolvePNP.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/SolvePNP.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LoadingBay.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LoadingBay.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/SolvePNP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/SolvePNP.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,6 +53,20 @@
       <recent name="D:\CameraCallibrate" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration name="SolvePNP" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="SolvePNP" />
+      <module name="CameraCallibrate.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.SolvePNP" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -76,7 +83,8 @@
       <workItem from="1585602323980" duration="14000" />
       <workItem from="1585672899274" duration="1086000" />
       <workItem from="1585686770228" duration="95000" />
-      <workItem from="1585771412964" duration="2311000" />
+      <workItem from="1585771412964" duration="2343000" />
+      <workItem from="1585847896089" duration="8413000" />
     </task>
     <servers />
   </component>
@@ -100,6 +108,22 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="794" y="420" width="356" height="200" key="Github.CreateGistDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1585367941773" />
+    <state width="1877" height="261" key="GridCell.Tab.0.bottom" timestamp="1585864441468">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="261" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1585864441468" />
+    <state width="1877" height="261" key="GridCell.Tab.0.center" timestamp="1585864441468">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="261" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1585864441468" />
+    <state width="1877" height="261" key="GridCell.Tab.0.left" timestamp="1585864441468">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="261" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1585864441468" />
+    <state width="1877" height="261" key="GridCell.Tab.0.right" timestamp="1585864441468">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="261" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1585864441468" />
     <state x="625" y="220" key="NewModule_or_Project.wizard" timestamp="1585689023150">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
