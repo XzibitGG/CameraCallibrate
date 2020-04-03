@@ -150,17 +150,17 @@ public class SolvePNP {
         }
         Mat frame2 = new Mat(frame.size(), frame.type());
         Imgproc.drawContours(frame2, Collections.singletonList(new MatOfPoint(bottomPolyOutput.toArray())), -1, new Scalar(0, 0, 255), 2);
-        Imgproc.drawContours(frame2, List.of(contours.get(0)), -1, new Scalar(255, 0, 255), 2);
+        Imgproc.drawContours(frame2, List.of(contours.get(0)), -1, new Scalar(255, 0, 255), 3);
 
 
 
         MatOfInt hull = new MatOfInt();
         Imgproc.convexHull(contours.get(0),hull );
-        Imgproc.drawContours(frame2, List.of(hull2Points(hull, contours.get(0))), 0, new Scalar(255, 0, 0), 1);
+        Imgproc.drawContours(frame2, List.of(hull2Points(hull, contours.get(0))), 0, new Scalar(255, 255, 255), 1);
 
 
         HighGui.namedWindow("Frame",  HighGui.WINDOW_NORMAL);
-        HighGui.imshow("Frame", frame);
+        HighGui.imshow("Frame", frame2);
         HighGui.waitKey();
 
     }
